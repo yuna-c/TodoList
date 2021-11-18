@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo list</title>
+    <link rel="stylesheet" href="./css/reset.css">
+</head>
+<body>
+    <div class="wrap">
+
+        <h1>Todo List</h1>
+
+        <div class="code-info">
+            <h2><strong>Node.js</strong></h2>
+            <ul class="code-list">
+                <li><a href="https://nodejs.org/en/" target="_blanck">node.js 설치</a></li>
+                <li>mac OS :<br>
+                    $ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash<br>
+                    $ nvm install --lts
+                </li>
+            </ul>
+        </div>
+
+        <div class="code-info">
+            <h2><strong>Yarn 설치</strong></h2>
+            <ul class="code-list">
+                <li><a href="https://classic.yarnpkg.com/en/docs/install#windows-stable" target="_blank">yarn 설치</a></li>
+                <li>$ npm install --global yarn</li>
+            </ul>
+        </div>
+
+        <div class="code-info">
+            <h2><strong>react 설치</strong></h2>
+            <ul class="code-list">
+                <li>$ npx create-react-app index</li>
+            </ul>
+        </div>
+
+        <div class="code-info">
+            <h2><strong>라이브러리 설치</strong></h2>
+            <ul class="code-list">
+                <li>$ yarn add styled-components react-icons</li>
+                <li><a href="https://react-icons.github.io/react-icons/#/icons/md" target="_blank">icon</a></li>
+            </ul>
+        </div>
+        
+        <div class="code-info">
+            <h2><strong>만들어야 할 컴포넌트</strong></h2>
+            <ul class="code-list">
+                <li>TodoTemplate : todolist layout 설정</li>
+                <li>TodoHead : 날짜, 요일, 해야할 일 몇 개인지 설정</li>
+                <li>TodoList : 할 일에 대한 정보(map 사용)</li>
+                <li>TodoItem : 할 일 완료 toggle</li>
+                <li>TodoCreate : 새로운 할 일, 등록, 삭제</li>
+            </ul>
+        </div>
+
+        <div class="code-info">
+            <h2><strong>App.js</strong></h2>
+        </div>
+
+        <pre>
+            <code>
+// App.js
+import React from 'react';
+import { createGlobalStyle } from 'styled-components';
+import TodoTemplate from './components/TodoTemplate';
+import TodoHead from './components/TodoHead';
+import TodoList from './components/TodoList';
+import TodoCreate from './components/TodoCreate';
+
+const GlobalStyle = createGlobalStyle `
+    body{
+        background: #e9ecef;
+    }
+`;
+
+function App() {
+    return (
+        &lt;&gt;
+            &lt;GlobalStyle /&gt;
+            &lt;TodoTemplate&gt;
+                &lt;TodoHead /&gt;
+                &lt;TodoList /&gt;
+                &lt;TodoCreate /&gt;
+            &lt;/TodoTemplate&gt;
+        &lt;/&gt;
+    );
+}
+
+export default App;
+            </code>
+        </pre>
+
+        <div class="code-info">
+            <h2><strong>TodoTemplate.js</strong></h2>
+        </div>
+
+        <pre>
+            <code>
+// TodoTemplate.js
+import React from 'react';
+import styled from 'styled-components';
+
+const TodoTemplateBlock = styled.div`
+    width: 512px;
+    height: 768px;
+
+    position: relative; 
+    background: #fff; 
+    border-radius: 16px; 
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.04);
+
+    margin: 0 auto; 
+    margin-top: 96px; 
+    margin-bottom: 32px; 
+
+    display: flex; 
+    flex-direction: column;
+
+`;
+
+function TodoTemplate({ children }) {
+    return (
+        &lt;TodoTemplateBlock&gt;
+            {children}
+        &lt;/TodoTemplateBlock&gt;
+    )
+}
+
+export default TodoTemplate;
+
+            </code>
+        </pre>
+
+        <div class="code-info">
+            <h2><strong>TodoHead.js</strong></h2>
+        </div>
+
+        <pre>
+            <code>
+// TodoHead.js
+import React from 'react';
+import styled from 'styled-components';
+
+const TodoHeadBlock = styled.div`
+    padding-top: 40px; 
+    padding-left: 32px;
+    padding-right: 32px; 
+    padding-bottom: 24px; 
+    border-bottom: 1px solid #e9ecef;
+
+    h1 {
+        margin: 0;
+        font-size: 30px; 
+        color: #343a40;
+        font-weight: 700;
+    }
+    .day {
+        margin-top: 4px;
+        color: #868e96;
+        font-size: 16px; 
+        font-weight: 700;
+    }
+    .tesks-left {
+        color: #20c997;
+        font-size: 16px; 
+        margin-top: 30px; 
+        font-weight: 700;
+    }
+`;
+
+function TodoHead() {
+    return (
+        &lt;TodoHeadBlock&gt;
+            &lt;h1&gt;2021년 11월 18일&lt;/h1&gt;
+            &lt;div className="day"&gt;목요일&lt;/div&gt;
+            &lt;div className="tesks-left"&gt;할 일 2개 남음&lt;/div&gt;
+        &lt;/TodoHeadBlock&gt;
+    )
+}
+
+export default TodoHead;
+
+            </code>
+        </pre>
+
+        <div class="code-info">
+            <h2><strong>TodoList.js</strong></h2>
+        </div>
+
+        <pre>
+            <code>
+// TodoList.js
+import React from 'react';
+import styled from 'styled-components';
+import TodoItem from './TodoItem';
+
+const TodoListBlock = styled.div`
+    flex: 1;
+    padding: 20px 32px; 
+    padding-bottom: 48px; 
+    overflow-y: auto; 
+    // background: #ddd;
+`;
+
+function TodoList() {
+    return (
+        &lt;TodoListBlock&gt;
+            &lt;TodoItem text="프로젝트 생성하기" done={true} /&gt;
+            &lt;TodoItem text="컴포넌트 스타일링 하기" done={true} /&gt;
+            &lt;TodoItem text="Context 만들기" done={false} /&gt;
+            &lt;TodoItem text="기능 구현하기" done={false} /&gt;
+        &lt;/TodoListBlock&gt;
+    )
+}
+
+export default TodoList;
+
+            </code>
+        </pre>
+        
+        <div class="code-info">
+            <h2><strong>TodoItem.js</strong></h2>
+        </div>
+
+        <pre>
+            <code>
+// TodoItem.js
+import React from 'react';
+import styled, { css } from 'styled-components';
+import { MdDone, MdDelete } from 'react-icons/md';
+
+const CheckCircle = styled.div`
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    border: 1px solid #ced4da;
+    font-size: 18px; //icon 크기
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin-top: -1px;
+    margin-right: 20px; 
+    cursor: pointer;
+    
+    ${props => props.done && css`
+        border: 1px solid #38d9a9;
+        color: #38d9a9;
+    `}
+`;
+
+const Text = styled.div`
+    flex: 1; 
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px; 
+    color: #495057;
+    ${props => props.done && css`
+        color: #ced4da;
+    `}
+`;
+
+const Remove = styled.div`
+    opacity: 0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #dee2e6;
+    font-size: 24px;
+    cursor: pointer;
+    &:hover {
+        color: #ff6b6b;
+    }
+`;
+
+const TodoItemBlock = styled.div`
+    display: flex; 
+    ailig-items: center; 
+    padding-top: 12px; 
+    padding-bottom: 12px; 
+
+    &:hover {
+       ${Remove} {
+           opacity: 1; 
+       }
+    }
+`;
+
+function TodoItem({ id, done, text}) {
+    return (
+        &lt;TodoItemBlock&gt;
+            &lt;CheckCircle done={done}&gt;
+                {done && &lt;MdDone /&gt;}
+            &lt;/CheckCircle&gt;
+            &lt;Text done={done}&gt;{text}&lt;/Text&gt;
+            &lt;Remove&gt;
+                &lt;MdDelete /&gt;
+            &lt;/Remove&gt;
+        &lt;/TodoItemBlock&gt;
+    )
+}
+
+export default TodoItem;
+
+            </code>
+        </pre>
+
+        <div class="code-info">
+            <h2><strong>TodoCreate.js</strong></h2>
+        </div>
+
+        <pre>
+            <code>
+// TodoCreate.js
+import React, { useState } from 'react';
+import styled, { css } from 'styled-components';
+import { MdAdd } from 'react-icons/md';
+
+const CircleButton = styled.button`
+    background: #38d9a9;
+    &:hover { 
+        background: #63e6be; 
+    }
+    &:active { 
+        background: #20c997;
+    }
+
+    z-index: 5;
+    cursor: pointer;
+    width: 70px;
+    height: 70px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+
+    position: absolute; 
+    left: 50%;
+    bottom: 0px; 
+    transform: translate(-50%, 50%);
+
+    font-size: 60px; 
+    color: #fff; 
+    border-radius: 50%; 
+    
+    border: none; 
+    outline: none; 
+
+    transition:0.125s all ease-in;
+
+    ${props => props.open && css`
+        background: #ff6b6b;
+        &:hover { 
+            background: #ff8787;
+        }
+        &:active{
+            background: #fa5252;
+        }
+        transform: translate(-50%, 50%) rotate(45deg);
+
+    `}
+`;
+
+const InsertFormPositioner = styled.div`
+    width: 100%;
+    bottom: 0; 
+    left: 0; 
+    position: absolute; 
+`;
+
+const InsertForm = styled.div`
+    background: #f8f9fa;
+    padding: 32px; 
+    padding-bottom: 72px;
+    border-bottom-left-radius: 16px; 
+    border-bottom-right-radius: 16px; 
+    border-top:1px solid #e9ecef;
+`;
+
+const Input = styled.input`
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+    box-sizing: border-box; 
+`;
+
+function TodoCreate() {
+    const [ open, setOpen ] = useState(false);
+    const onToggle = () => setOpen(!open);
+
+
+    return (
+        &lt;&gt;
+            {open && 
+                (&lt;InsertFormPositioner&gt;
+                    &lt;InsertForm&gt;
+                        &lt;Input placeholder="할 일을 입력 후, Enter 를 누르세요." autoFocus/&gt;
+                    &lt;/InsertForm&gt;
+                &lt;/InsertFormPositioner&gt;
+            )}
+            &lt;CircleButton onClick={onToggle} open={open}&gt;
+                &lt;MdAdd /&gt;
+            &lt;/CircleButton&gt;
+        &lt;/&gt;
+    )
+}
+
+export default TodoCreate;
+
+            </code>
+        </pre>
+
+        <div class="code-info">
+            <h2><strong>Context API 를 활용한 상태관리</strong></h2>
+            <ul class="code-list">
+                <li>
+                    context 만든 후, 각 context에서 필요한 것들을 끌어다 쓸 수 있게 한 후<br>
+                    Context API 와 useReducer를 사용해서 변화를 필요로하는 dispatch 함수에서 상태 업데이트 액션을 넣어줌
+                </li>
+                <li>todohead, todolist에 todos 전달(map사용)</li>
+                <li>Context API를 쓰는게 무조건 옳은 것은 아님.</li>
+            </ul>
+        </div>
+
+        <div class="code-info">
+            <h2><strong>TodoContext.js</strong></h2>
+            <ul class="code-list">
+                <li>리듀서 만들기</li>
+            </ul>
+        </div>
+
+        <pre>
+            <code>
+// TodoContext.js
+import React, { useReducer, createContext, useContext, useRef } from 'react';
+
+const initialTodos = [
+    {
+        id: 1,
+        text: '프로젝트 생성하기',
+        done: true,
+    },
+    {
+        id: 2,
+        text: '컴포넌트 스타일링하기',
+        done: true,
+    },
+    {
+        id: 3,
+        text: 'Context 만들기',
+        done: false,
+    },
+    {
+        id: 4,
+        text: '기능 구현하기',
+        done: false,
+    }
+];
+
+// 추후 useReducer에서 사용할 함수, state, action을 가져와서 다음 상태를 return 해주는 함수
+/*
+    상태 업데이트 = 
+    CREATE : 새로운 항목 추가
+    TOGGLE : on/off
+    REMOVE : 지우기
+*/
+function todoReducer(state, action) {
+    switch (action.type) {
+        case 'CREATE':
+            return state.concat(action.todo);
+        case 'TOGGLE':
+            //업데이트 하는 법
+            return state.map(
+                // 모든 todo 변환, 만약 todo.id action.id으로 받아온 id랑 ? 같다면 해당 todo를 업데이트 해줌, done값을 기존 값에다가 반전 시킴
+                // todo.id !== action.id 유지시킴
+                todo => todo.id === action.id ? { ...todo, done: !todo.done } : todo
+            );
+        case 'REMOVE': 
+            // todo항목들에 대하, todo.id !== action.id 일치하지 않는것만 가져와서 삭제한다
+            return state.filter(todo => todo.id !== action.id)
+        default : 
+            throw new Error(`Unhandled action type: ${action.type}`);
+    }
+}
+
+// state, dispatch를 위한 두개의 컨텍스트 만들기
+// React.createContext(); or 상단에서 불러오기
+const TodoStateContext = createContext();
+const TodoDispatchContext = createContext();
+// next.id 값을 관리하기 위해 useRef 불러오기
+const TodoNextIdContext = createContext();
+
+// TodoStateContext.Provider
+
+// 컴포넌트 만들기(최적화 위해 따로따로 만듬)
+export function TodoProvider({ children }) {
+    const [state, dispatch] = useReducer(todoReducer, initialTodos);
+    const nextId = useRef(5);
+    return (
+        &lt;TodoStateContext.Provider value={state}&gt;
+            &lt;TodoDispatchContext.Provider value={dispatch}&gt;
+                &lt;TodoNextIdContext.Provider value={nextId}&gt;
+                    {children}
+                &lt;/TodoNextIdContext.Provider&gt;
+            &lt;/TodoDispatchContext.Provider&gt;
+        &lt;/TodoStateContext.Provider&gt;
+    );
+}
+
+// const state = useContext(TodoStateContext);
+// 커스텀 훅 만들기
+export function useTodoState() {
+    const context = useContext(TodoStateContext);
+    if(!context) {
+        throw new Error('Cannot find TodoProvider');
+    }
+    return context;
+}
+
+export function useTodoDispatch() {
+    // return useContext(TodoDispatchContext);
+    const context = useContext(TodoDispatchContext);
+    if(!context) {
+        throw new Error('Cannot find TodoProvider');
+    }
+    return context;
+}
+
+// TodoNextIdContext를 위한 커스텀 훅 만들기
+// todo create에서 next.id를 참조하고 싶을 때
+export function useTodoNextId() {
+    const context = useContext(TodoNextIdContext);
+    if(!context) {
+        throw new Error('Cannot find TodoProvider');
+    }
+    return context;
+}
+
+// 추가적으로 하면 좋은 작업 : 컨텍스트가 없을 때 에러처리 
+            </code>
+        </pre>
+
+        <div class="code-info">
+            <h2><strong>기능 구현하기</strong></h2>
+            <ul class="code-list">
+                <li>TodoHead.js : 오늘 날짜 보여주기, 할 일 몇개 남았는지 보여주기</li>
+                <li>TodoList.js : 리스트 map key로 보는 데이터로 바꿔주기</li>
+                <li>TodoItem.js : useDispatch로 리스트 삭제, 체크</li>
+                <li>TodoCreate.js : Dispatch, nextId로 인풋창 관리, 상태창 날아가지않게 새로고침 안되게,</li>
+            </ul>
+        </div>
+
+        <div class="code-info">
+            <h2><strong>TodoHead.js</strong></h2>
+        </div>    
+        <pre>
+            <code>
+import React from 'react';
+import styled from 'styled-components';
+import { useTodoState } from '../TodoContext';
+
+const TodoHeadBlock = styled.div`
+    padding-top: 40px; 
+    padding-left: 32px;
+    padding-right: 32px; 
+    padding-bottom: 24px; 
+    border-bottom: 1px solid #e9ecef;
+
+    h1 {
+        margin: 0;
+        font-size: 30px; 
+        color: #343a40;
+        font-weight: 700;
+    }
+    .day {
+        margin-top: 4px;
+        color: #868e96;
+        font-size: 16px; 
+        font-weight: 700;
+    }
+    .tesks-left {
+        color: #20c997;
+        font-size: 16px; 
+        margin-top: 30px; 
+        font-weight: 700;
+    }
+`;
+
+function TodoHead() {
+    // 배열 가지고오기
+    const todos = useTodoState();
+    // todos배열 안에있는 todos 항목들중에서 done이 false인 것들을 가져옴
+    const undoneTesks = todos.filter(todo => !todo.done);
+
+    // 날짜 구현
+    const today = new Date();
+    const dateString = today.toLocaleDateString('ko-KR', {//한국어 포맷을 쓸꺼야
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+
+    // 요일 구현 
+    const dayName = today.toLocaleDateString('ko-KR', {
+        weekday: 'long'
+    });
+
+    return (
+        &lt;TodoHeadBlock&gt;
+            &lt;h1&gt;
+                {/* 2021년 11월 18일 */}
+                {dateString}
+            &lt;/h1&gt;
+            &lt;div className="day"&gt;
+                {/* 목요일 */}
+                {dayName}
+            &lt;/div&gt;
+            &lt;div className="tesks-left"&gt;할 일 {undoneTesks.length}개 남음&lt;/div&gt;
+        &lt;/TodoHeadBlock&gt;
+    )
+}
+
+export default TodoHead;
+
+            </code>
+        </pre>
+
+        <div class="code-info">
+            <h2><strong>TodoList.js</strong></h2>
+        </div>    
+
+        <pre>
+            <code>
+import React from 'react';
+import styled from 'styled-components';
+import { useTodoState } from '../TodoContext';
+import TodoItem from './TodoItem';
+
+const TodoListBlock = styled.div`
+    flex: 1;
+    padding: 20px 32px; 
+    padding-bottom: 48px; 
+    overflow-y: auto; 
+    // background: #ddd;
+`;
+
+function TodoList() {
+    // const state = useTodoState();
+    // console.log(state);
+    const todos = useTodoState();
+    return (
+        &lt;TodoListBlock&gt;
+            {/* &lt;TodoItem text="프로젝트 생성하기" done={true} /&gt;
+            &lt;TodoItem text="컴포넌트 스타일링 하기" done={true} /&gt;
+            &lt;TodoItem text="Context 만들기" done={false} /&gt;
+            &lt;TodoItem text="기능 구현하기" done={false} /&gt; */}
+            {todos.map( //각 todo item에 대해서 변환(key 필수)
+                todo =&gt; &lt;TodoItem 
+                    key={todo.id}
+                    id={todo.id}
+                    text={todo.text}
+                    done={todo.done}
+                /&gt;
+            )}
+        &lt;/TodoListBlock&gt;
+    )
+}
+
+export default TodoList;
+
+            </code>
+        </pre>
+
+        <div class="code-info">
+            <h2><strong>TodoCreate.js</strong></h2>
+        </div>   
+        <pre>
+            <code>
+// TodoCreate.js
+import React, { useState } from 'react';
+import styled, { css } from 'styled-components';
+import { MdAdd } from 'react-icons/md';
+import { useTodoDispatch, useTodoNextId } from '../TodoContext';
+
+const CircleButton = styled.button`
+    background: #38d9a9;
+    &:hover { 
+        background: #63e6be; 
+    }
+    &:active { 
+        background: #20c997;
+    }
+
+    z-index: 5;
+    cursor: pointer;
+    width: 70px;
+    height: 70px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+
+    position: absolute; 
+    left: 50%;
+    bottom: 0px; 
+    transform: translate(-50%, 50%);
+
+    font-size: 60px; 
+    color: #fff; 
+    border-radius: 50%; 
+    
+    border: none; 
+    outline: none; 
+
+    transition:0.125s all ease-in;
+
+    ${props => props.open && css`
+        background: #ff6b6b;
+        &:hover { 
+            background: #ff8787;
+        }
+        &:active{
+            background: #fa5252;
+        }
+        transform: translate(-50%, 50%) rotate(45deg);
+
+    `}
+`;
+
+const InsertFormPositioner = styled.div`
+    width: 100%;
+    bottom: 0; 
+    left: 0; 
+    position: absolute; 
+`;
+
+const InsertForm = styled.form`
+    // onSubmit이벤트 사용할 수 있다
+    background: #f8f9fa;
+    padding: 32px; 
+    padding-bottom: 72px;
+    border-bottom-left-radius: 16px; 
+    border-bottom-right-radius: 16px; 
+    border-top:1px solid #e9ecef;
+`;
+
+const Input = styled.input`
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+    box-sizing: border-box; 
+`;
+
+function TodoCreate() {
+    const [ open, setOpen ] = useState(false);
+    const [ value, setValue ] = useState('');
+    // 삭제, 체크 상태값 관리
+    const dispatch = useTodoDispatch();
+    const nextId = useTodoNextId();
+
+    const onToggle = () => setOpen(!open);
+    // 인풋상태 관리
+    const onChange = e => setValue(e.target.value);
+    // 새로고침 안되게 (상태창 날아가지 않게)
+    const onSubmit = e => {
+        e.preventDefault(); //브라우저에서 하는 행동 방지 할때, dispatch
+        dispatch({
+            type: 'CREATE',
+            todo: {
+                id: nextId.current,
+                text: value,
+                done: false,
+            }
+        });
+        setValue('');
+        setOpen(false);
+        nextId.current += 1;
+    }
+
+
+    // const nextId = useTodoNextId();
+    // // 변화를 주고 싶을 때
+    // nextId.current += 1;
+
+
+    return (
+        &lt;&gt;
+            {open && 
+                (&lt;InsertFormPositioner&gt;
+                    &lt;InsertForm onSubmit={onSubmit}&gt;
+                        &lt;Input 
+                            placeholder="할 일을 입력 후, Enter 를 누르세요." 
+                            autoFocus
+                            onChange={onChange}
+                            value={value}
+                        /&gt;
+                    &lt;/InsertForm&gt;
+                &lt;/InsertFormPositioner&gt;
+            )}
+            &lt;CircleButton onClick={onToggle} open={open}&gt;
+                &lt;MdAdd /&gt;
+            &lt;/CircleButton&gt;
+        &lt;/&gt;
+    )
+}
+
+export default React.memo(TodoCreate);
+// 성능 최적화
+
+            </code>
+        </pre>
+<!-- 
+    <div class="code-info">
+        <h2><strong></strong></h2>
+        <ul class="code-list">
+            <li></li>
+        </ul>
+    </div>
+    <pre>
+        <code>
+        </code>
+    </pre>
+-->
+
+    </div>
+</body>
+</html>
